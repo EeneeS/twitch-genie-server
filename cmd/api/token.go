@@ -3,6 +3,10 @@ package main
 import "net/http"
 
 func (app *application) exchangeTokenHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("exchange token response"))
+
+	//FIX: veel te veel werk gehad aan deze stappen uitsvhrijvefndskfdf
+
 	// 1. retrieve the `code` from the body.
 	// 2. do a post request to: https://id.twitch.tv/oauth2/token with this query.
 	// client_id=hof5gwx0su6owfnys0yan9c87zr6t

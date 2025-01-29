@@ -7,16 +7,13 @@ import (
 )
 
 func main() {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	port := os.Getenv("PORT")
-
 	cfg := &config{
-		address: port,
+		address: os.Getenv("PORT"),
 	}
 
 	app := &application{

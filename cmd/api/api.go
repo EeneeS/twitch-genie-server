@@ -27,10 +27,10 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.address)
-	r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
-
 	r.Route("/v1", func(r chi.Router) {
+		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.address)
+		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
+
 		r.Get("/health", app.healthCheckHandler)
 		r.Get("/exchange-token", app.exchangeTokenHandler)
 	})

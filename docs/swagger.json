@@ -15,6 +15,15 @@
         },
         "version": "1.0"
     },
+    "host": "localhost:6969",
     "basePath": "/v1",
-    "paths": {}
+    "paths": {
+        "/health": {
+            "get": {
+                "summary": "check the API health",
+                "operationId": "health",
+                "responses": {}
+            }
+        }
+    }
 }

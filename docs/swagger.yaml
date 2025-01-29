@@ -1,4 +1,5 @@
 basePath: /v1
+host: localhost:6969
 info:
   contact:
     email: support@swagger.io
@@ -11,5 +12,10 @@ info:
   termsOfService: http://swagger.io/terms/
   title: Twitch Genie API
   version: "1.0"
-paths: {}
+paths:
+  /health:
+    get:
+      operationId: health
+      responses: {}
+      summary: check the API health
 swagger: "2.0"

@@ -100,7 +100,8 @@ func exchangeToken(code string) (*ExchangeTokenResponse, error) {
 	body := map[string]string{
 		"client_id":     os.Getenv("CLIENT_ID"),
 		"client_secret": os.Getenv("CLIENT_SECRET"),
-		"grantType":     "authorization_code",
+		"grant_type":    "authorization_code",
+		"code":          code,
 		"redirect_uri":  os.Getenv("REDIRECT_URI"),
 	}
 
@@ -117,13 +118,22 @@ func exchangeToken(code string) (*ExchangeTokenResponse, error) {
 	}
 	defer response.Body.Close()
 
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("twitch responded with status: %v", response.StatusCode)
-	}
-
 	bodyResp, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	if response.StatusCode != http.StatusOK {
+		var errorBody struct {
+			Message string `json:message`
+			Status  int    `json:"status"`
+		}
+
+		if err := json.Unmarshal(bodyResp, &errorBody); err != nil {
+			return nil, fmt.Errorf("twitch responded with status %v but failed to parse error body: %v", response.StatusCode, err)
+		}
+
+		return nil, fmt.Errorf("twitch error: %s", errorBody.Message)
 	}
 
 	var tokenResponse ExchangeTokenResponse

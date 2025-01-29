@@ -1,14 +1,64 @@
 package main
 
-import "net/http"
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+)
 
+type ExchangeTokenRequestBody struct {
+	Code string `json:"code" binding:"required"`
+}
+
+type UserData struct {
+	Login string `json:"login"`
+}
+
+type ExchangeTokenResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+// ExchangeToken godoc
+//
+// @Summary Exchange token
+// @Description Exchange the auth token and retrieve user data
+// @Accepts json
+// @Produce json
+// @Param exchangeTokenBody body ExchangeTokenRequestBody true "Exchange token request"
+// @router /exchange-token [post]
 func (app *application) exchangeTokenHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("exchange token response"))
+
+	decoder := json.NewDecoder(r.Body)
+
+	var body ExchangeTokenRequestBody
+
+	err := decoder.Decode(&body)
+	if err != nil {
+		panic(err)
+	}
+
+	if body.Code == "" {
+		http.Error(w, "code is required", http.StatusBadRequest)
+		return
+	}
+
+	tokenResponse, err := exchangeToken(body.Code)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println(tokenResponse.AccessToken) // zodatn stopt me zagen
+	return
 
 	//FIX: veel te veel werk gehad aan deze stappen uitsvhrijvefndskfdf
 
-	// 1. retrieve the `code` from the body.
-	// 2. do a post request to: https://id.twitch.tv/oauth2/token with this query.
+	// 1. retrieve the `code` from the body. V
+	// 2. do a post request to: https://id.twitch.tv/oauth2/token with this query. V
 	// client_id=hof5gwx0su6owfnys0yan9c87zr6t
 	// &client_secret=41vpdji4e9gif29md0ouet6fktd2
 	// &code=gulfwdmys5lsm6qyz4xiz9q32l10
@@ -43,4 +93,44 @@ func (app *application) exchangeTokenHandler(w http.ResponseWriter, r *http.Requ
 	// 6. get the login and user_id from the request.
 	// 7. save { user_id, login, access_token, refresh_token } to database.
 	// 8. return the login and/or user_id to the user.
+}
+
+func exchangeToken(code string) (*ExchangeTokenResponse, error) {
+	baseUrl := os.Getenv("EXCHANGE_TOKEN_URL")
+	body := map[string]string{
+		"client_id":     os.Getenv("CLIENT_ID"),
+		"client_secret": os.Getenv("CLIENT_SECRET"),
+		"grantType":     "authorization_code",
+		"redirect_uri":  os.Getenv("REDIRECT_URI"),
+	}
+
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	err := encoder.Encode(body)
+	if err != nil {
+		return nil, fmt.Errorf("error encoding body to JSON: %v", err)
+	}
+
+	response, err := http.Post(baseUrl, "application/json", &buf)
+	if err != nil {
+		return nil, fmt.Errorf("error sending POST request: %v", err)
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("twitch responded with status: %v", response.StatusCode)
+	}
+
+	bodyResp, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body: %v", err)
+	}
+
+	var tokenResponse ExchangeTokenResponse
+	decoder := json.NewDecoder(bytes.NewReader(bodyResp))
+	if err := decoder.Decode(&tokenResponse); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	return &tokenResponse, nil
 }

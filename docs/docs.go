@@ -24,11 +24,60 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/exchange-token": {
+            "post": {
+                "description": "Exchange the auth token and retrieve user data",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Exchange token",
+                "parameters": [
+                    {
+                        "description": "Exchange token request",
+                        "name": "exchangeTokenBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.ExchangeTokenRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.UserData"
+                        }
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "summary": "check the API health",
                 "operationId": "health",
                 "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "main.ExchangeTokenRequestBody": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.UserData": {
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string"
+                }
             }
         }
     }

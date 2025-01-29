@@ -1,4 +1,17 @@
 basePath: /v1
+definitions:
+  main.ExchangeTokenRequestBody:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  main.UserData:
+    properties:
+      login:
+        type: string
+    type: object
 host: localhost:6969
 info:
   contact:
@@ -13,6 +26,24 @@ info:
   title: Twitch Genie API
   version: "1.0"
 paths:
+  /exchange-token:
+    post:
+      description: Exchange the auth token and retrieve user data
+      parameters:
+      - description: Exchange token request
+        in: body
+        name: exchangeTokenBody
+        required: true
+        schema:
+          $ref: '#/definitions/main.ExchangeTokenRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.UserData'
+      summary: Exchange token
   /health:
     get:
       operationId: health

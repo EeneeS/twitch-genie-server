@@ -32,7 +32,7 @@ func (app *application) mount() http.Handler {
 		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
 
 		r.Get("/health", app.healthCheckHandler)
-		r.Get("/exchange-token", app.exchangeTokenHandler)
+		r.Post("/exchange-token", app.exchangeTokenHandler)
 	})
 
 	return r

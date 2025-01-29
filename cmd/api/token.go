@@ -137,8 +137,7 @@ func exchangeToken(code string) (*ExchangeTokenResponse, error) {
 	}
 
 	var tokenResponse ExchangeTokenResponse
-	decoder := json.NewDecoder(bytes.NewReader(bodyResp))
-	if err := decoder.Decode(&tokenResponse); err != nil {
+	if err := json.Unmarshal(bodyResp, &tokenResponse); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 

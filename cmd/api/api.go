@@ -2,17 +2,22 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/eenees/twitch-genie-server/docs"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
-	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"log"
 	"net/http"
 	"time"
+
+	_ "github.com/eenees/twitch-genie-server/docs"
+	"github.com/eenees/twitch-genie-server/internal/handlers"
+	"github.com/eenees/twitch-genie-server/internal/repositories"
+	"github.com/eenees/twitch-genie-server/internal/services"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 type application struct {
 	config config
+	// later database
 }
 
 type config struct {
@@ -27,12 +32,15 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	repo := repositories.NewMockRepository()
+	tokenService := services.NewTokenService(repo)
+	tokenHandler := handlers.NewTokenHandler(tokenService)
+
 	r.Route("/v1", func(r chi.Router) {
 		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.address)
 		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
-
 		r.Get("/health", app.healthCheckHandler)
-		r.Post("/exchange-token", app.exchangeTokenHandler)
+		r.Post("/exchange-token", tokenHandler.ExchangeToken)
 	})
 
 	return r

@@ -26,9 +26,17 @@ const docTemplate = `{
     "paths": {
         "/exchange-token": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Exchange the auth token and retrieve user data",
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Authentication"
                 ],
                 "summary": "Exchange token",
                 "parameters": [

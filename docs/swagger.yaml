@@ -32,7 +32,11 @@ paths:
       produces:
       - application/json
       responses: {}
+      security:
+      - ApiKeyAuth: []
       summary: Exchange token
+      tags:
+      - Authentication
   /health:
     get:
       operationId: health

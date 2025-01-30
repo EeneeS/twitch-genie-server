@@ -16,7 +16,7 @@ func NewTokenHandler(service *services.TokenService) *TokenHandler {
 }
 
 type exchangeTokenBody struct {
-	Code string `json"code"`
+	Code string `json:"code"`
 }
 
 // ExchangeToken godoc
@@ -27,6 +27,8 @@ type exchangeTokenBody struct {
 // @Produce json
 // @Param exchangeTokenBody body exchangeTokenBody true "Exchange token body"
 // @router /exchange-token [post]
+// @Security ApiKeyAuth
+// @Tags Authentication
 func (handler *TokenHandler) ExchangeToken(w http.ResponseWriter, r *http.Request) {
 
 	var body struct {
@@ -66,6 +68,15 @@ func (handler *TokenHandler) ExchangeToken(w http.ResponseWriter, r *http.Reques
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    "jwt value",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode, // TODO: change this
+		Path:     "/",
+	})
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(userData)

@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"time"
-
 	_ "github.com/eenees/twitch-genie-server/docs"
 	"github.com/eenees/twitch-genie-server/internal/handlers"
 	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"github.com/eenees/twitch-genie-server/internal/services"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/rs/cors"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"log"
+	"net/http"
+	"time"
 )
 
 type application struct {
@@ -26,6 +26,16 @@ type config struct {
 
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
+
+	corsOptions := cors.Options{
+		AllowedOrigins:   []string{"http://localhost:6969"}, // Change to match your frontend
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		ExposedHeaders:   []string{"Set-Cookie"}, // This is CRUCIAL for cookies
+		AllowCredentials: true,                   // Allows cookies to be sent
+	}
+
+	r.Use(cors.New(corsOptions).Handler)
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)

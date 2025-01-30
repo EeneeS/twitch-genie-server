@@ -2,7 +2,7 @@ package repositories
 
 type Repository struct {
 	Token interface {
-		SaveToken(userId, login, accessToken, refreshToken string)
+		SaveToken(userId, login, accessToken, refreshToken string) error
 	}
 }
 

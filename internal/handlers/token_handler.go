@@ -36,25 +36,37 @@ func (handler *TokenHandler) ExchangeToken(w http.ResponseWriter, r *http.Reques
 	rawBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	if err := json.Unmarshal(rawBody, &body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	if body.Code == "" {
 		http.Error(w, "Code is required", http.StatusBadRequest)
+		return
 	}
 
 	tokenData, err := handler.service.ExchangeToken(body.Code)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	userData, err := handler.service.ValidateToken(tokenData.AccessToken)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	w.Write([]byte(userData.Login))
+	err = handler.service.SaveUser(userData.UserId, userData.Login, tokenData.AccessToken, tokenData.RefreshToken)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(userData)
 }

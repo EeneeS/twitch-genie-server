@@ -23,7 +23,6 @@ func NewChannelHandler(service *services.ChannelService) *ChannelHandler {
 // @Security ApiKeyAuth
 // @Tags Channels
 func (handler *ChannelHandler) GetModeratedChannels(w http.ResponseWriter, r *http.Request) {
-
 	userId, ok := r.Context().Value("userId").(string)
 	if !ok {
 		http.Error(w, "token not found in request", http.StatusUnauthorized)

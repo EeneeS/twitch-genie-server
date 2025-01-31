@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/eenees/twitch-genie-server/internal/repositories"
+	"github.com/eenees/twitch-genie-server/internal/utils/auth"
 	"github.com/joho/godotenv"
 )
 
@@ -33,9 +34,12 @@ func main() {
 		address: os.Getenv("PORT"),
 	}
 
+	authSecret := os.Getenv("JWT_SECRET")
+
 	app := &application{
 		config: *cfg,
 		repo:   *repositories.NewMockRepository(), // TODO: change to real db
+		auth:   *auth.NewJWTAuthenticator(authSecret),
 	}
 
 	mux := app.mount()

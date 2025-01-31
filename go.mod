@@ -4,6 +4,7 @@ go 1.23.5
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/cors v1.11.1
 	github.com/swaggo/http-swagger/v2 v2.0.2

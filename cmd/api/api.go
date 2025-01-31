@@ -2,22 +2,25 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	_ "github.com/eenees/twitch-genie-server/docs"
 	"github.com/eenees/twitch-genie-server/internal/handlers"
 	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"github.com/eenees/twitch-genie-server/internal/services"
+	"github.com/eenees/twitch-genie-server/internal/utils/auth"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/rs/cors"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
-	"log"
-	"net/http"
-	"time"
 )
 
 type application struct {
 	config config
 	repo   repositories.Repository
+	auth   auth.JWTAuthenticator
 }
 
 type config struct {
@@ -29,7 +32,7 @@ func (app *application) mount() http.Handler {
 
 	app.setupMiddleWare(r)
 
-	tokenService := services.NewTokenService(&app.repo)
+	tokenService := services.NewTokenService(&app.repo, &app.auth)
 	tokenHandler := handlers.NewTokenHandler(tokenService)
 
 	r.Route("/v1", func(r chi.Router) {
@@ -38,6 +41,9 @@ func (app *application) mount() http.Handler {
 		r.Get("/health", app.healthCheckHandler)
 		r.Post("/exchange-token", tokenHandler.ExchangeToken)
 	})
+
+	// will use middleware to check cookies later (accessable from app.auth), so for now the auth can stay in the application layer.
+	// will need to find a way for the tokenhandler to access the generate funcion for a jwt token.
 
 	return r
 }

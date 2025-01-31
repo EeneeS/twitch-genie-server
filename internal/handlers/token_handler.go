@@ -63,7 +63,13 @@ func (handler *TokenHandler) ExchangeToken(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = handler.service.SaveUser(userData.UserId, userData.Login, tokenData.AccessToken, tokenData.RefreshToken)
+	err = handler.service.SaveToken(userData.UserId, userData.Login, tokenData.AccessToken, tokenData.RefreshToken)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	jwtToken, err := handler.service.GenerateJWTToken(userData.UserId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -71,7 +77,7 @@ func (handler *TokenHandler) ExchangeToken(w http.ResponseWriter, r *http.Reques
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
-		Value:    "jwt value",
+		Value:    jwtToken,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode, // TODO: change this

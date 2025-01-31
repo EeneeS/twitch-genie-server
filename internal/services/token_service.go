@@ -3,15 +3,19 @@ package services
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/eenees/twitch-genie-server/internal/repositories"
+	"github.com/eenees/twitch-genie-server/internal/utils/auth"
 )
 
 type TokenService struct {
 	repo *repositories.Repository
+	auth *auth.JWTAuthenticator
 }
 
 type TokenData struct {
@@ -30,8 +34,11 @@ type UserData struct {
 	ExpiresIn int      `json:"expires_in"`
 }
 
-func NewTokenService(repo *repositories.Repository) *TokenService {
-	return &TokenService{repo: repo}
+func NewTokenService(repo *repositories.Repository, auth *auth.JWTAuthenticator) *TokenService {
+	return &TokenService{
+		repo: repo,
+		auth: auth,
+	}
 }
 
 func (service *TokenService) ExchangeToken(code string) (*TokenData, error) {
@@ -110,10 +117,18 @@ func (service *TokenService) ValidateToken(access_token string) (*UserData, erro
 	return &userData, nil
 }
 
-func (service *TokenService) SaveUser(userId, login, accessToken, refreshToken string) error {
+func (service *TokenService) SaveToken(userId, login, accessToken, refreshToken string) error {
 	err := service.repo.Token.SaveToken(userId, login, accessToken, refreshToken)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (service *TokenService) GenerateJWTToken(userId string) (string, error) {
+	jwtToken, err := service.auth.GenerateToken(userId)
+	if err != nil {
+		return "", err
+	}
+	return jwtToken, nil
 }

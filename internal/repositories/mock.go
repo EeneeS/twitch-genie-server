@@ -13,7 +13,15 @@ type MockTokenRepository struct {
 }
 
 func (mockRepo *MockTokenRepository) SaveToken(userId, login, accessToken, refreshToken string) error {
-	// TODO: if the users exists just update the information, don't create new entry
+	for i, user := range mockRepo.Users {
+		if user.UserId == userId {
+			mockRepo.Users[i].Login = login
+			mockRepo.Users[i].accessToken = accessToken
+			mockRepo.Users[i].refreshToken = refreshToken
+			return nil
+		}
+	}
+
 	newUser := User{
 		UserId:       userId,
 		Login:        login,

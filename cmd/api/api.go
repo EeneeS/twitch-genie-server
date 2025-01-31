@@ -2,10 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"time"
-
 	_ "github.com/eenees/twitch-genie-server/docs"
 	"github.com/eenees/twitch-genie-server/internal/handlers"
 	"github.com/eenees/twitch-genie-server/internal/repositories"
@@ -15,6 +11,9 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/rs/cors"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"log"
+	"net/http"
+	"time"
 )
 
 type application struct {

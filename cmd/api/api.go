@@ -2,10 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"time"
-
 	_ "github.com/eenees/twitch-genie-server/docs"
 	"github.com/eenees/twitch-genie-server/internal/handlers"
 	"github.com/eenees/twitch-genie-server/internal/middlewares"
@@ -16,6 +12,9 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/rs/cors"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
+	"log"
+	"net/http"
+	"time"
 )
 
 type application struct {
@@ -49,7 +48,7 @@ func (app *application) mount() http.Handler {
 
 		// JWT HTTP ONLY COOKIE PROTECTED ROUTES
 		r.Group(func(r chi.Router) {
-			r.Use(middlewares.AuthMiddleware)
+			r.Use(middlewares.AuthMiddleware(&app.auth))
 			r.Get("/moderated-channels", channelHandler.GetModeratedChannels)
 		})
 

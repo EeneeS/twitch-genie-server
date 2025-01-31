@@ -2,9 +2,8 @@ package middlewares
 
 import (
 	"context"
-	"net/http"
-
 	"github.com/eenees/twitch-genie-server/internal/utils/auth"
+	"net/http"
 )
 
 func AuthMiddleware(auth *auth.JWTAuthenticator) func(http.Handler) http.Handler {
@@ -22,7 +21,12 @@ func AuthMiddleware(auth *auth.JWTAuthenticator) func(http.Handler) http.Handler
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "token", jwtToken)
+			userId, err := jwtToken.Claims.GetSubject()
+			if err != nil {
+				http.Error(w, "Unauthorized: No ID found in token", http.StatusUnauthorized)
+			}
+
+			ctx := context.WithValue(r.Context(), "token", userId)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)

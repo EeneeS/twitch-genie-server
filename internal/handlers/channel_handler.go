@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/eenees/twitch-genie-server/internal/services"
@@ -23,5 +24,12 @@ func NewChannelHandler(service *services.ChannelService) *ChannelHandler {
 // @Security ApiKeyAuth
 // @Tags Channels
 func (handler *ChannelHandler) GetModeratedChannels(w http.ResponseWriter, r *http.Request) {
+
+	token, ok := r.Context().Value("token").(string)
+	if !ok {
+		http.Error(w, "token not found in request", http.StatusUnauthorized)
+	}
+
+	fmt.Println(token)
 
 }

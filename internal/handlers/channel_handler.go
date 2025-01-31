@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/eenees/twitch-genie-server/internal/services"
 	"net/http"
 )
@@ -26,12 +27,21 @@ func (handler *ChannelHandler) GetModeratedChannels(w http.ResponseWriter, r *ht
 	userId, ok := r.Context().Value("userId").(string)
 	if !ok {
 		http.Error(w, "token not found in request", http.StatusUnauthorized)
+		return
 	}
 
-	accesToken, err := handler.service.GetAccessToken(userId)
+	accessToken, err := handler.service.GetAccessToken(userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	w.Write([]byte(accesToken))
+	channels, err := handler.service.GetModeratedChannels(userId, accessToken)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(channels)
 }

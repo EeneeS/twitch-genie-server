@@ -9,3 +9,11 @@ type ChannelService struct {
 func NewChannelService(repo *repositories.Repository) *ChannelService {
 	return &ChannelService{repo: repo}
 }
+
+func (service *ChannelService) getAccessToken(userId string) (string, error) {
+	accessToken, err := service.repo.Token.GetAccessToken(userId)
+	if err != nil {
+		return "", err
+	}
+	return accessToken, nil
+}

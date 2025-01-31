@@ -31,5 +31,4 @@ func (handler *ChannelHandler) GetModeratedChannels(w http.ResponseWriter, r *ht
 	}
 
 	fmt.Println(token)
-
 }

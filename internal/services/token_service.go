@@ -3,14 +3,12 @@ package services
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/eenees/twitch-genie-server/internal/repositories"
+	"github.com/eenees/twitch-genie-server/internal/utils/auth"
 	"io"
 	"net/http"
 	"os"
-
-	"github.com/eenees/twitch-genie-server/internal/repositories"
-	"github.com/eenees/twitch-genie-server/internal/utils/auth"
 )
 
 type TokenService struct {

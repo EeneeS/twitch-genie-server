@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -38,7 +39,7 @@ func main() {
 
 	app := &application{
 		config: *cfg,
-		repo:   *repositories.NewMockRepository(), // TODO: change to real db
+		repo:   *repositories.NewMockRepository(),
 		auth:   *auth.NewJWTAuthenticator(authSecret),
 	}
 

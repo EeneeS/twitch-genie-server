@@ -24,7 +24,7 @@ func (auth *JWTAuthenticator) GenerateToken(userId string) (string, error) {
 			"iat": time.Now().Unix(),
 			"sub": userId,
 		})
-	s, err := t.SignedString(auth.secret)
+	s, err := t.SignedString([]byte(auth.secret))
 	if err != nil {
 		return "", fmt.Errorf("failed to create JWT token: %v", err)
 	}

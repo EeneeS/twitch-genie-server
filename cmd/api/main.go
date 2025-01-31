@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/eenees/twitch-genie-server/internal/repositories"
+	"github.com/joho/godotenv"
 )
 
 // @title Twitch Genie API
@@ -33,6 +35,7 @@ func main() {
 
 	app := &application{
 		config: *cfg,
+		repo:   *repositories.NewMockRepository(), // TODO: change to real db
 	}
 
 	mux := app.mount()

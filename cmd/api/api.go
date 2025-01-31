@@ -17,7 +17,7 @@ import (
 
 type application struct {
 	config config
-	// later database
+	repo   repositories.Repository
 }
 
 type config struct {
@@ -27,23 +27,9 @@ type config struct {
 func (app *application) mount() http.Handler {
 	r := chi.NewRouter()
 
-	corsOptions := cors.Options{
-		AllowedOrigins:   []string{"http://localhost:6969"}, // Change to match your frontend
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
-		ExposedHeaders:   []string{"Set-Cookie"}, // This is CRUCIAL for cookies
-		AllowCredentials: true,                   // Allows cookies to be sent
-	}
+	app.setupMiddleWare(r)
 
-	r.Use(cors.New(corsOptions).Handler)
-
-	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
-	repo := repositories.NewMockRepository()
-	tokenService := services.NewTokenService(repo)
+	tokenService := services.NewTokenService(&app.repo)
 	tokenHandler := handlers.NewTokenHandler(tokenService)
 
 	r.Route("/v1", func(r chi.Router) {
@@ -54,6 +40,23 @@ func (app *application) mount() http.Handler {
 	})
 
 	return r
+}
+
+func (app *application) setupMiddleWare(r chi.Router) {
+	corsOptions := cors.Options{
+		AllowedOrigins:   []string{"http://localhost:6969"}, // Change to match your frontend
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		ExposedHeaders:   []string{"Set-Cookie"},
+		AllowCredentials: true,
+	}
+
+	r.Use(cors.New(corsOptions).Handler)
+
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 }
 
 func (app *application) run(mux http.Handler) error {

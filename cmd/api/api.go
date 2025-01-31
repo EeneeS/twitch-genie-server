@@ -2,8 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	_ "github.com/eenees/twitch-genie-server/docs"
 	"github.com/eenees/twitch-genie-server/internal/handlers"
+	"github.com/eenees/twitch-genie-server/internal/middlewares"
 	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"github.com/eenees/twitch-genie-server/internal/services"
 	"github.com/eenees/twitch-genie-server/internal/utils/auth"
@@ -11,9 +16,6 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/rs/cors"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
-	"log"
-	"net/http"
-	"time"
 )
 
 type application struct {
@@ -34,11 +36,23 @@ func (app *application) mount() http.Handler {
 	tokenService := services.NewTokenService(&app.repo, &app.auth)
 	tokenHandler := handlers.NewTokenHandler(tokenService)
 
+	channelService := services.NewChannelService(&app.repo)
+	channelHandler := handlers.NewChannelHandler(channelService)
+
 	r.Route("/v1", func(r chi.Router) {
 		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.address)
 		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
+
 		r.Get("/health", app.healthCheckHandler)
+
 		r.Post("/exchange-token", tokenHandler.ExchangeToken)
+
+		// JWT HTTP ONLY COOKIE PROTECTED ROUTES
+		r.Group(func(r chi.Router) {
+			r.Use(middlewares.AuthMiddleware)
+			r.Get("/moderated-channels", channelHandler.GetModeratedChannels)
+		})
+
 	})
 
 	return r

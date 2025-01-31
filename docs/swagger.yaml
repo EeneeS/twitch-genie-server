@@ -42,4 +42,15 @@ paths:
       operationId: health
       responses: {}
       summary: check the API health
+  /moderated-channels:
+    get:
+      description: get information about the channels you moderate
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - ApiKeyAuth: []
+      summary: get channels you moderate
+      tags:
+      - Channels
 swagger: "2.0"

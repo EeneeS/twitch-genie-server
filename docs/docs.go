@@ -59,6 +59,24 @@ const docTemplate = `{
                 "operationId": "health",
                 "responses": {}
             }
+        },
+        "/moderated-channels": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "get information about the channels you moderate",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Channels"
+                ],
+                "summary": "get channels you moderate",
+                "responses": {}
+            }
         }
     },
     "definitions": {

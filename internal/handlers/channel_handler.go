@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/eenees/twitch-genie-server/internal/services"
+	"net/http"
 )
 
 type ChannelHandler struct {
@@ -25,10 +23,15 @@ func NewChannelHandler(service *services.ChannelService) *ChannelHandler {
 // @Tags Channels
 func (handler *ChannelHandler) GetModeratedChannels(w http.ResponseWriter, r *http.Request) {
 
-	token, ok := r.Context().Value("token").(string)
+	userId, ok := r.Context().Value("userId").(string)
 	if !ok {
 		http.Error(w, "token not found in request", http.StatusUnauthorized)
 	}
 
-	fmt.Println(token)
+	accesToken, err := handler.service.GetAccessToken(userId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	w.Write([]byte(accesToken))
 }

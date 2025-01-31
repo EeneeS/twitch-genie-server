@@ -26,7 +26,7 @@ func AuthMiddleware(auth *auth.JWTAuthenticator) func(http.Handler) http.Handler
 				http.Error(w, "Unauthorized: No ID found in token", http.StatusUnauthorized)
 			}
 
-			ctx := context.WithValue(r.Context(), "token", userId)
+			ctx := context.WithValue(r.Context(), "userId", userId)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)

@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-
 	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"github.com/eenees/twitch-genie-server/internal/utils/auth"
 	"github.com/joho/godotenv"
+	"log"
+	"os"
 )
 
 // @title Twitch Genie API

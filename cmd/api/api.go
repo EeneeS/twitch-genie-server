@@ -41,9 +41,6 @@ func (app *application) mount() http.Handler {
 		r.Post("/exchange-token", tokenHandler.ExchangeToken)
 	})
 
-	// will use middleware to check cookies later (accessable from app.auth), so for now the auth can stay in the application layer.
-	// will need to find a way for the tokenhandler to access the generate funcion for a jwt token.
-
 	return r
 }
 

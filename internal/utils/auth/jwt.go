@@ -30,3 +30,16 @@ func (auth *JWTAuthenticator) GenerateToken(userId string) (string, error) {
 	}
 	return s, nil
 }
+
+func (auth *JWTAuthenticator) VerifyToken(token string) (*jwt.Token, error) {
+	return jwt.Parse(token, func(t *jwt.Token) (any, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method %v", t.Header["alg"])
+		}
+
+		return []byte(auth.secret), nil
+	},
+		jwt.WithExpirationRequired(),
+		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Name}),
+	)
+}

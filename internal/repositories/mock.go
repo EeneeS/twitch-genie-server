@@ -1,6 +1,9 @@
 package repositories
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 func NewMockRepository() *Repository {
 	return &Repository{
@@ -10,9 +13,13 @@ func NewMockRepository() *Repository {
 
 type MockTokenRepository struct {
 	Users []User
+	Mutex sync.RWMutex
 }
 
 func (mockRepo *MockTokenRepository) SaveToken(userId, login, accessToken, refreshToken string) error {
+	mockRepo.Mutex.Lock()
+	defer mockRepo.Mutex.Unlock()
+
 	for i, user := range mockRepo.Users {
 		if user.UserId == userId {
 			mockRepo.Users[i].Login = login
@@ -33,6 +40,9 @@ func (mockRepo *MockTokenRepository) SaveToken(userId, login, accessToken, refre
 }
 
 func (mockRepo *MockTokenRepository) GetAccessToken(userId string) (string, error) {
+	mockRepo.Mutex.RLock()
+	defer mockRepo.Mutex.RUnlock()
+
 	for _, user := range mockRepo.Users {
 		if user.UserId == userId {
 			return user.accessToken, nil

@@ -36,6 +36,7 @@ func (mockRepo *MockTokenRepository) SaveToken(userId, login, accessToken, refre
 		refreshToken: refreshToken,
 	}
 	mockRepo.Users = append(mockRepo.Users, newUser)
+
 	return nil
 }
 
@@ -48,5 +49,6 @@ func (mockRepo *MockTokenRepository) GetAccessToken(userId string) (string, erro
 			return user.accessToken, nil
 		}
 	}
+
 	return "", fmt.Errorf("user not found")
 }

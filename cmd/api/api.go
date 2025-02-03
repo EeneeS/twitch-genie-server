@@ -46,11 +46,12 @@ func (app *application) mount() http.Handler {
 
 		r.Post("/exchange-token", tokenHandler.ExchangeToken)
 
-		// JWT HTTP ONLY COOKIE PROTECTED ROUTES
 		r.Group(func(r chi.Router) {
 			r.Use(middlewares.AuthMiddleware(&app.auth))
 			r.Get("/moderated-channels", channelHandler.GetModeratedChannels)
 		})
+
+		r.Get("/ws", WsHandler)
 
 	})
 

@@ -32,7 +32,7 @@ func NewChannelService(repo *repositories.Repository) *ChannelService {
 	return &ChannelService{repo: repo}
 }
 
-func (service *ChannelService) GetAccessToken(userId string) (string, error) { // TODO: this should be more of a util function, not bound to a service.
+func (service *ChannelService) GetAccessToken(userId string) (string, error) {
 	accessToken, err := service.repo.Token.GetAccessToken(userId)
 	if err != nil {
 		return "", err

@@ -51,7 +51,7 @@ func (app *application) mount() http.Handler {
 			r.Get("/moderated-channels", channelHandler.GetModeratedChannels)
 		})
 
-		r.Get("/ws", WsHandler)
+		r.Get("/ws", app.wsHandler)
 
 	})
 

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"sync"
+  "fmt"
+  "net/http"
+  "sync"
 
-	"github.com/gorilla/websocket"
+  "github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -50,4 +50,15 @@ func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
     }
     mu.Unlock()
   }
+
+	mu.Lock()
+	defer func() {
+		for i, c := range connections[channelId] {
+			if c == conn {
+				connections[channelId] = append(connections[channelId][:i], connections[channelId][i+1:]...)
+				break
+			}
+		}
+		mu.Unlock()
+	}()
 }

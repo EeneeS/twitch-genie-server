@@ -49,10 +49,8 @@ func (app *application) mount() http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(middlewares.AuthMiddleware(&app.auth))
 			r.Get("/moderated-channels", channelHandler.GetModeratedChannels)
+      r.Get("/ws", app.wsHandler)
 		})
-
-		r.Get("/ws", app.wsHandler)
-
 	})
 
 	return r

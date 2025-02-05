@@ -37,6 +37,9 @@ func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
   for {
     _, msg, err := conn.ReadMessage()
     if err != nil {
+      if closeErr, ok := err.(*websocket.CloseError); ok && closeErr.Code == websocket.CloseNormalClosure {
+        break
+      }
       fmt.Println("Read error:", err)
       break
     }

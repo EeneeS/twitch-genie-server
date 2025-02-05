@@ -38,6 +38,9 @@ func (app *application) mount() http.Handler {
 	channelService := services.NewChannelService(&app.repo)
 	channelHandler := handlers.NewChannelHandler(channelService)
 
+  websocketService := services.NewWebSocketService(&app.repo)
+  websocketHandler := handlers.NewWebSocketHandler(websocketService)
+
 	r.Route("/v1", func(r chi.Router) {
 		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.address)
 		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
@@ -49,7 +52,7 @@ func (app *application) mount() http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(middlewares.AuthMiddleware(&app.auth))
 			r.Get("/moderated-channels", channelHandler.GetModeratedChannels)
-      r.Get("/ws", app.wsHandler)
+      r.Get("/ws", websocketHandler.Init)
 		})
 	})
 

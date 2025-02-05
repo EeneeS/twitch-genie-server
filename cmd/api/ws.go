@@ -17,6 +17,7 @@ var upgrader = websocket.Upgrader{
 var connections = make(map[string][]*websocket.Conn)
 var mu sync.Mutex
 
+// TODO: validate the data being send?
 func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
   channelId := r.URL.Query().Get("channel_id")
   if channelId == "" {

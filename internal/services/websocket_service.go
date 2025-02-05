@@ -63,7 +63,6 @@ func (service *WebsocketService) IsChannelModerator(channelId, userId string) (b
   }
 
   for _, channel := range channelData.Data {
-    fmt.Printf("id: %v, zoek: %v", channel.Id, channelId)
     if channel.Id == channelId {
       return true, nil
     }

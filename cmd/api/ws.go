@@ -19,10 +19,20 @@ var mu sync.Mutex
 
 // TODO: make sure only mods of the channelId can send stuff
 func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
+
+  userId, ok := r.Context().Value("userId").(string)
+  if !ok {
+    http.Error(w, "token not found in request", http.StatusBadRequest)
+    return
+  }
+
   channelId := r.URL.Query().Get("channel_id")
   if channelId == "" {
     http.Error(w, "missing channel id", http.StatusBadRequest)
+    return
   }
+
+  fmt.Println(userId)
 
   conn, err := upgrader.Upgrade(w, r, nil)
   if err != nil {

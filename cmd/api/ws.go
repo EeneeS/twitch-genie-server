@@ -1,9 +1,11 @@
 package main
 
 import (
-  "fmt"
-  "net/http"
-  "github.com/gorilla/websocket"
+	"fmt"
+	"net/http"
+	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -12,9 +14,10 @@ var upgrader = websocket.Upgrader{
   },
 }
 
-// WebSocket handler
-func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
+var connections = make(map[string][]*websocket.Conn)
+var mu sync.Mutex
 
+func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
   channelId := r.URL.Query().Get("channel_id")
   if channelId == "" {
     http.Error(w, "missing channel id", http.StatusBadRequest)
@@ -27,6 +30,10 @@ func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
   }
   defer conn.Close()
 
+  mu.Lock()
+  connections[channelId] = append(connections[channelId], conn)
+  mu.Unlock()
+
   for {
     _, msg, err := conn.ReadMessage()
     if err != nil {
@@ -34,11 +41,13 @@ func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
       break
     }
 
-    fmt.Printf("Received: %s\n", msg)
-
-    if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-      fmt.Println("Write error:", err)
-      break
+    mu.Lock()
+    for _, c := range connections[channelId] {
+      if err := c.WriteMessage(websocket.TextMessage, msg); err != nil {
+        fmt.Println("Write error:", err)
+        break
+      }
     }
+    mu.Unlock()
   }
 }

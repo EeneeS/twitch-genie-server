@@ -40,14 +40,12 @@ func (service *WebsocketService) IsChannelModerator(channelId, userId string) (b
 
   res, err := client.Do(req)
   if err != nil {
-    fmt.Println("here 1")
     return false, fmt.Errorf("error sending request to validate if moderator: %v", err)
   }
   defer res.Body.Close()
 
   if res.StatusCode != http.StatusOK {
     body, _ := io.ReadAll(res.Body)
-    fmt.Println(string(body))
     return false, fmt.Errorf("twitch error: %v", body)
   }
 

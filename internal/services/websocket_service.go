@@ -18,7 +18,6 @@ func NewWebSocketService(repo *repositories.Repository) *WebsocketService {
   return &WebsocketService{repo: repo}
 }
 
-// this does not work because of twitch api not responding as expected
 func (service *WebsocketService) IsChannelModerator(channelId, userId string) (bool, error) {
   url := fmt.Sprintf("https://api.twitch.tv/helix/moderation/channels?user_id=%v", userId)
 

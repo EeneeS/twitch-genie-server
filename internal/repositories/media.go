@@ -20,3 +20,6 @@ func (repo *MediaRepository) GetMedia(channelId string) error {
   return nil
 }
 
+func (repo *MediaRepository) RemoveAllMedia(channelId string) error {
+  return nil
+}

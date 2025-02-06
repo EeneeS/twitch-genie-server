@@ -10,6 +10,7 @@ type Repository struct {
   Media interface {
     SaveMedia(channelId, source string, xpos, ypos int) error
     GetMedia(channelId string) error
+    RemoveAllMedia(channelId string) error
   }
 }
 

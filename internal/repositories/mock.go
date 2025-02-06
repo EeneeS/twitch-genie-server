@@ -73,3 +73,7 @@ func (repo *MockMediaRepository) SaveMedia(channelId, source string, xpos, ypos 
 func (repo *MockMediaRepository) GetMedia(channelId string) error {
   return nil
 }
+
+func (repo *MockMediaRepository) RemoveAllMedia(channelId string) error {
+  return nil
+}

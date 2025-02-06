@@ -11,6 +11,13 @@ func NewMockRepository() *Repository {
 	}
 }
 
+type User struct {
+	UserId       string
+	Login        string
+	accessToken  string
+	refreshToken string
+}
+
 type MockTokenRepository struct {
 	Users []User
 	Mutex sync.RWMutex

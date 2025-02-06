@@ -12,6 +12,5 @@ type Repository struct {
 func NewRepository(db *mongo.Client) *Repository {
 	return &Repository{
 		Token: &UserRepository{db: db.Database("twitch-genie-db").Collection("users")},
-
 	}
 }

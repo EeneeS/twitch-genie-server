@@ -1,7 +1,5 @@
 package repositories
 
-import "github.com/jackc/pgx/v5"
-
 type Repository struct {
 	Token interface {
 		SaveToken(userId, login, accessToken, refreshToken string) error
@@ -9,7 +7,7 @@ type Repository struct {
 	}
 }
 
-func NewRepository(db *pgx.Conn) *Repository {
+func NewRepository(db string) *Repository {
 	return &Repository{
 		Token: &TokenRepository{db: db},
 	}

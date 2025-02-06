@@ -1,13 +1,11 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 
 	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"github.com/eenees/twitch-genie-server/internal/utils/auth"
-	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -38,16 +36,9 @@ func main() {
 
 	authSecret := os.Getenv("JWT_SECRET")
 
-  db, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
-  if err != nil {
-    log.Fatal("Unable to connect to database")
-  }
-  defer db.Close(context.Background())
-
 	app := &application{
 		config: *cfg,
-		// repo:   *repositories.NewMockRepository(),
-    repo: *repositories.NewRepository(db),
+		repo:   *repositories.NewMockRepository(),
 		auth:   *auth.NewJWTAuthenticator(authSecret),
 	}
 

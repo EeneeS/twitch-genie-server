@@ -56,24 +56,26 @@ func (handler *WebsocketHandler) Init(w http.ResponseWriter, r *http.Request) {
   connections[channelId] = append(connections[channelId], conn)
   mu.Unlock()
 
-  for {
-    _, msg, err := conn.ReadMessage()
-    if err != nil {
-      if closeErr, ok := err.(*websocket.CloseError); ok && closeErr.Code == websocket.CloseNormalClosure {
-        break
-      }
-      fmt.Println("Read error:", err)
-      break
-    }
+  /*
+  type: 'image' | 'sound"
+  */
 
-    mu.Lock()
-    for _, c := range connections[channelId] {
-      if err := c.WriteMessage(websocket.TextMessage, msg); err != nil {
-        fmt.Println("Write error:", err)
-        break
-      }
+  for {
+
+    message, err := handler.service.ReadMessage(conn)
+    if err != nil {
+      fmt.Println(err.Error())
     }
-    mu.Unlock()
+    fmt.Println(message)
+
+    // mu.Lock()
+    // for _, c := range connections[channelId] {
+    //   if err := c.WriteMessage(websocket.TextMessage, msg); err != nil {
+    //     fmt.Println("Write error:", err)
+    //     break
+    //   }
+    // }
+    // mu.Unlock()
   }
 
   mu.Lock()

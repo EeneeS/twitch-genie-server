@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/eenees/twitch-genie-server/internal/repositories"
+	"github.com/gorilla/websocket"
 )
 
 type WebsocketService struct {
@@ -67,4 +68,28 @@ func (service *WebsocketService) IsChannelModerator(channelId, userId string) (b
   }
 
   return false, fmt.Errorf("you don't moderate the given channel id")
+}
+
+type BaseMessage struct {
+  Type string `json:"type"`
+}
+
+func (service *WebsocketService) ReadMessage(conn *websocket.Conn) (interface{}, error) {
+  _, msg, err := conn.ReadMessage()
+  if err != nil {
+    if closeErr, ok := err.(*websocket.CloseError); ok && closeErr.Code == websocket.CloseNormalClosure {
+      return nil, fmt.Errorf("error")
+    }
+    fmt.Println("Read error:", err)
+    return nil, fmt.Errorf("read error")
+  }
+
+  var baseMessage BaseMessage
+  if err := json.Unmarshal(msg, &baseMessage); err != nil {
+    return nil, fmt.Errorf("unmarshal error")
+  }
+
+  // based on the type make different struct
+
+  return nil, nil
 }

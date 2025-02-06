@@ -1,13 +1,15 @@
 package repositories
 
+import "go.mongodb.org/mongo-driver/v2/mongo"
+
 type Repository struct {
 	Token interface {
-		SaveToken(userId, login, accessToken, refreshToken string) error
+		SaveUser(userId, login, accessToken, refreshToken string) error
 		GetAccessToken(userId string) (string, error)
 	}
 }
 
-func NewRepository(db string) *Repository {
+func NewRepository(db *mongo.Client) *Repository {
 	return &Repository{
 		Token: &TokenRepository{db: db},
 	}

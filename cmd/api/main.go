@@ -49,7 +49,8 @@ func main() {
 
 	app := &application{
 		config: *cfg,
-		repo:   *repositories.NewMockRepository(),
+		// repo:   *repositories.NewMockRepository(),
+    repo: *repositories.NewRepository(db),
 		auth:   *auth.NewJWTAuthenticator(authSecret),
 	}
 

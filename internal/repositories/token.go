@@ -1,11 +1,12 @@
 package repositories
 
+import "go.mongodb.org/mongo-driver/v2/mongo"
+
 type TokenRepository struct {
-	db string
+	db *mongo.Client
 }
 
-// rename to SaveUser
-func (repo *TokenRepository) SaveToken(userId, login, accessToken, refreshToken string) error {
+func (repo *TokenRepository) SaveUser(userId, login, accessToken, refreshToken string) error {
   return nil
 }
 

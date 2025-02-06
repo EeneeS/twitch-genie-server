@@ -23,7 +23,7 @@ type MockTokenRepository struct {
 	Mutex sync.RWMutex
 }
 
-func (mockRepo *MockTokenRepository) SaveToken(userId, login, accessToken, refreshToken string) error {
+func (mockRepo *MockTokenRepository) SaveUser(userId, login, accessToken, refreshToken string) error {
 	mockRepo.Mutex.Lock()
 	defer mockRepo.Mutex.Unlock()
 

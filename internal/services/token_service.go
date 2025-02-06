@@ -116,7 +116,7 @@ func (service *TokenService) ValidateToken(access_token string) (*UserData, erro
 }
 
 func (service *TokenService) SaveToken(userId, login, accessToken, refreshToken string) error {
-	err := service.repo.Token.SaveToken(userId, login, accessToken, refreshToken)
+	err := service.repo.Token.SaveUser(userId, login, accessToken, refreshToken)
 	if err != nil {
 		return err
 	}

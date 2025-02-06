@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"github.com/eenees/twitch-genie-server/internal/utils/auth"
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 // @title Twitch Genie API
@@ -34,6 +38,13 @@ func main() {
 		address: os.Getenv("PORT"),
 	}
 
+  mongoUri := os.Getenv("MONGO_URI")
+  db, err := connectMongoDB(mongoUri)
+  if err != nil {
+    log.Fatal("Error connecting to mongoDB:", err)
+  }
+  defer db.Disconnect(context.Background())
+
 	authSecret := os.Getenv("JWT_SECRET")
 
 	app := &application{
@@ -45,4 +56,20 @@ func main() {
 	mux := app.mount()
 
 	log.Fatal(app.run(mux))
+}
+
+func connectMongoDB(uri string) (*mongo.Client, error) {
+  options := options.Client().ApplyURI(uri)
+  client, err := mongo.Connect(options)
+  if err != nil {
+    return nil, err
+  }
+
+  err = client.Ping(context.Background(), nil)
+  if err != nil {
+    return nil, err
+  }
+
+  fmt.Println("[database] connected")
+  return client, nil
 }

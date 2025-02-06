@@ -74,11 +74,23 @@ type BaseMessage struct {
   Type string `json:"type"`
 }
 
+type ImageMessage struct {
+  BaseMessage
+  Xpos  int `json:"y_pos"`
+  Ypos int `json:"x_pos"`
+  Event string `json:"event"`
+}
+
+type SoundMessage struct {
+  BaseMessage
+  Source string `json:"source"`
+}
+
 func (service *WebsocketService) ReadMessage(conn *websocket.Conn) (interface{}, error) {
   _, msg, err := conn.ReadMessage()
   if err != nil {
     if closeErr, ok := err.(*websocket.CloseError); ok && closeErr.Code == websocket.CloseNormalClosure {
-      return nil, fmt.Errorf("error")
+      return nil, fmt.Errorf("non closing error")
     }
     fmt.Println("Read error:", err)
     return nil, fmt.Errorf("read error")
@@ -89,7 +101,17 @@ func (service *WebsocketService) ReadMessage(conn *websocket.Conn) (interface{},
     return nil, fmt.Errorf("unmarshal error")
   }
 
-  // based on the type make different struct
+  var processedMessage interface{}
+  switch baseMessage.Type {
+  case "image":
+    var m ImageMessage
+    if err := json.Unmarshal(msg, &m); err != nil {
+      return nil, fmt.Errorf("unmarshal error")
+    }
+    processedMessage = m
+  default:
+    return nil, fmt.Errorf("invalid message type")
+  }
 
-  return nil, nil
+  return processedMessage, nil
 }

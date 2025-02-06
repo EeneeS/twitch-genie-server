@@ -56,15 +56,12 @@ func (handler *WebsocketHandler) Init(w http.ResponseWriter, r *http.Request) {
   connections[channelId] = append(connections[channelId], conn)
   mu.Unlock()
 
-  /*
-  type: 'image' | 'sound"
-  */
-
   for {
 
     message, err := handler.service.ReadMessage(conn)
     if err != nil {
-      fmt.Println(err.Error())
+      fmt.Println(err)
+      break
     }
     fmt.Println(message)
 

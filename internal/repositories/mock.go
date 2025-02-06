@@ -7,7 +7,7 @@ import (
 
 func NewMockRepository() *Repository {
 	return &Repository{
-		Token: &MockTokenRepository{},
+		Token: &MockUserRepository{},
 	}
 }
 
@@ -18,12 +18,12 @@ type User struct {
 	refreshToken string
 }
 
-type MockTokenRepository struct {
+type MockUserRepository struct {
 	Users []User
 	Mutex sync.RWMutex
 }
 
-func (mockRepo *MockTokenRepository) SaveUser(userId, login, accessToken, refreshToken string) error {
+func (mockRepo *MockUserRepository) SaveUser(userId, login, accessToken, refreshToken string) error {
 	mockRepo.Mutex.Lock()
 	defer mockRepo.Mutex.Unlock()
 
@@ -47,7 +47,7 @@ func (mockRepo *MockTokenRepository) SaveUser(userId, login, accessToken, refres
 	return nil
 }
 
-func (mockRepo *MockTokenRepository) GetAccessToken(userId string) (string, error) {
+func (mockRepo *MockUserRepository) GetAccessToken(userId string) (string, error) {
 	mockRepo.Mutex.RLock()
 	defer mockRepo.Mutex.RUnlock()
 

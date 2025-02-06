@@ -11,6 +11,6 @@ type Repository struct {
 
 func NewRepository(db *mongo.Client) *Repository {
 	return &Repository{
-		Token: &TokenRepository{db: db},
+		Token: &UserRepository{db: db},
 	}
 }

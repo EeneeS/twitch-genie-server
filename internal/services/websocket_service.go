@@ -76,8 +76,8 @@ type BaseMessage struct {
 
 type ImageMessage struct {
   BaseMessage
-  Xpos  int `json:"y_pos"`
-  Ypos int `json:"x_pos"`
+  Xpos  int `json:"x_pos"`
+  Ypos int `json:"y_pos"`
   Event string `json:"event"`
 }
 
@@ -107,6 +107,18 @@ func (service *WebsocketService) ReadMessage(conn *websocket.Conn) (interface{},
     var m ImageMessage
     if err := json.Unmarshal(msg, &m); err != nil {
       return nil, fmt.Errorf("unmarshal error")
+    }
+    if m.Event == "" {
+      return nil, fmt.Errorf("missing or incorrect fields")
+    }
+    processedMessage = m
+  case "sound":
+    var m SoundMessage
+    if err := json.Unmarshal(msg, &m); err != nil {
+      return nil, fmt.Errorf("unmarshal error")
+    }
+    if m.Source == "" {
+      return nil, fmt.Errorf("missing or incorrect fields")
     }
     processedMessage = m
   default:

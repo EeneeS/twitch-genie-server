@@ -37,5 +37,20 @@ func (repo *UserRepository) SaveUser(userId, login, accessToken, refreshToken st
 }
 
 func (repo *UserRepository) GetAccessToken(userId string) (string, error) {
-	return "", nil
+    filter := bson.M{"userId": userId}
+    projection := bson.M{"accessToken": 1, "_id": 0}
+    
+    var result struct {
+        AccessToken string `bson:"accessToken"`
+    }
+    
+    err := repo.db.FindOne(context.TODO(), filter, options.FindOne().SetProjection(projection)).Decode(&result)
+    if err != nil {
+        if err == mongo.ErrNoDocuments {
+            return "", fmt.Errorf("user not found")
+        }
+        return "", err
+    }
+    
+    return result.AccessToken, nil
 }

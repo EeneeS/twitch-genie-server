@@ -129,6 +129,21 @@ func (service *WebsocketService) ReadMessage(conn *websocket.Conn) (interface{},
   return processedMessage, nil
 }
 
+func (service *WebsocketService) HandleMessage(message interface{}, channelId string) error {
+  switch m := message.(type) {
+  case ImageMessage:
+    if m.Event == "drop" {
+      err := service.SaveMedia(channelId, m)
+      if err != nil {
+        return fmt.Errorf("failed to save media")
+      }
+    }
+  case SoundMessage:
+    fmt.Println(m)
+  }
+  return nil
+}
+
 func (service *WebsocketService) SaveMedia(channelId string, media ImageMessage) error {
   err := service.repo.Media.SaveMedia(channelId, media.Source, media.Xpos, media.Ypos)
   return err

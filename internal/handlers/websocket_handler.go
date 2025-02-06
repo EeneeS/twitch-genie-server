@@ -64,19 +64,11 @@ func (handler *WebsocketHandler) Init(w http.ResponseWriter, r *http.Request) {
       break
     }
 
-    switch m := message.(type) {
-    case services.ImageMessage:
-      if m.Event == "drop" {
-        err := handler.service.SaveMedia(channelId, m)
-        if err != nil {
-          break
-        }
-      }
-    case services.SoundMessage:
-      fmt.Println(m)
+    err = handler.service.HandleMessage(message, channelId)
+    if err != nil {
+      fmt.Println(err)
+      break
     }
-
-    // if message type is 'image' and event is 'drop' save to database
 
     // mu.Lock()
     // for _, c := range connections[channelId] {

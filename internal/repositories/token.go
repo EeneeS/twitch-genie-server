@@ -1,7 +1,11 @@
 package repositories
 
+import (
+	"github.com/jackc/pgx/v5"
+)
+
 type TokenRepository struct {
-	db string
+	db *pgx.Conn
 }
 
 type User struct {

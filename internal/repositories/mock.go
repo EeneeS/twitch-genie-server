@@ -8,6 +8,7 @@ import (
 func NewMockRepository() *Repository {
 	return &Repository{
 		Token: &MockUserRepository{},
+    Media: &MockMediaRepository{},
 	}
 }
 
@@ -21,6 +22,11 @@ type User struct {
 type MockUserRepository struct {
 	Users []User
 	Mutex sync.RWMutex
+}
+
+type MockMediaRepository struct {
+  Media []Media
+  Mutex sync.RWMutex
 }
 
 func (mockRepo *MockUserRepository) SaveUser(userId, login, accessToken, refreshToken string) error {
@@ -58,4 +64,12 @@ func (mockRepo *MockUserRepository) GetAccessToken(userId string) (string, error
 	}
 
 	return "", fmt.Errorf("user not found")
+}
+
+func (repo *MockMediaRepository) SaveMedia(channelId, source string, xpos, ypos int) error {
+  return nil
+}
+
+func (repo *MockMediaRepository) GetMedia(channelId string) error {
+  return nil
 }

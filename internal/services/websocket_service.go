@@ -76,6 +76,7 @@ type BaseMessage struct {
 
 type ImageMessage struct {
   BaseMessage
+  Source string `json:"source"`
   Xpos  int `json:"x_pos"`
   Ypos int `json:"y_pos"`
   Event string `json:"event"`
@@ -108,7 +109,7 @@ func (service *WebsocketService) ReadMessage(conn *websocket.Conn) (interface{},
     if err := json.Unmarshal(msg, &m); err != nil {
       return nil, fmt.Errorf("unmarshal error")
     }
-    if m.Event == "" {
+    if m.Event == "" || m.Source == "" {
       return nil, fmt.Errorf("missing or incorrect fields")
     }
     processedMessage = m
@@ -126,4 +127,9 @@ func (service *WebsocketService) ReadMessage(conn *websocket.Conn) (interface{},
   }
 
   return processedMessage, nil
+}
+
+func (service *WebsocketService) SaveMedia(channelId string, media ImageMessage) error {
+  err := service.repo.Media.SaveMedia(channelId, media.Source, media.Xpos, media.Ypos)
+  return err
 }

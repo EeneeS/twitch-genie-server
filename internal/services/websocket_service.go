@@ -147,13 +147,20 @@ func (service *WebsocketService) HandleMessage(message interface{}, channelId st
 
 func (service *WebsocketService) SendMessage(message interface{}, channelId string, connections map[string][]*websocket.Conn, mu *sync.Mutex) error {
     mu.Lock()
+    defer mu.Unlock()
+
+    messageBytes, err := json.Marshal(message)
+    if err != nil {
+      return err
+    }
+
     for _, c := range connections[channelId] {
-      if err := c.WriteMessage(websocket.TextMessage, []byte("IDK")); err != nil {
+      if err := c.WriteMessage(websocket.TextMessage, messageBytes); err != nil {
         fmt.Println("Write error:", err)
         break
       }
     }
-    mu.Unlock()
+
   return nil
 }
 

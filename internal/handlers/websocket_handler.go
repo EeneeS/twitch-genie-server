@@ -70,14 +70,7 @@ func (handler *WebsocketHandler) Init(w http.ResponseWriter, r *http.Request) {
       break
     }
 
-    // mu.Lock()
-    // for _, c := range connections[channelId] {
-    //   if err := c.WriteMessage(websocket.TextMessage, msg); err != nil {
-    //     fmt.Println("Write error:", err)
-    //     break
-    //   }
-    // }
-    // mu.Unlock()
+    err = handler.service.SendMessage(message, channelId, connections, &mu)
   }
 
   mu.Lock()

@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/eenees/twitch-genie-server/internal/repositories"
 	"github.com/gorilla/websocket"
@@ -141,6 +142,18 @@ func (service *WebsocketService) HandleMessage(message interface{}, channelId st
   case SoundMessage:
     fmt.Println(m)
   }
+  return nil
+}
+
+func (service *WebsocketService) SendMessage(message interface{}, channelId string, connections map[string][]*websocket.Conn, mu *sync.Mutex) error {
+    mu.Lock()
+    for _, c := range connections[channelId] {
+      if err := c.WriteMessage(websocket.TextMessage, []byte("IDK")); err != nil {
+        fmt.Println("Write error:", err)
+        break
+      }
+    }
+    mu.Unlock()
   return nil
 }
 

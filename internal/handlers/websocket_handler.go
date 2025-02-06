@@ -57,7 +57,6 @@ func (handler *WebsocketHandler) Init(w http.ResponseWriter, r *http.Request) {
   mu.Unlock()
 
   for {
-
     message, err := handler.service.ReadMessage(conn)
     if err != nil {
       fmt.Println(err)

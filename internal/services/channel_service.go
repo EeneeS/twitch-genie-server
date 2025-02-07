@@ -41,7 +41,7 @@ func (service *ChannelService) GetAccessToken(userId string) (string, error) {
 }
 
 func (service *ChannelService) GetModeratedChannels(userId, accessToken string) (*ChannelData, error) {
-	url := fmt.Sprintf("https://api.twitch.tv/helix/moderation/channels?user_id=%v", userId) // TODO: implement pagination
+	url := fmt.Sprintf("https://api.twitch.tv/helix/moderation/channels?user_id=%v", userId) // TODO: implement pagination or set max query to 100
 
 	client := &http.Client{}
 

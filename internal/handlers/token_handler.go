@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/eenees/twitch-genie-server/internal/services"
 	"io"
 	"net/http"
+	"time"
+
+	"github.com/eenees/twitch-genie-server/internal/services"
 )
 
 type TokenHandler struct {
@@ -82,8 +84,23 @@ func (handler *TokenHandler) ExchangeToken(w http.ResponseWriter, r *http.Reques
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode, // TODO: change this
 		Path:     "/",
+    Expires: time.Now().Add(time.Hour * 1),
 	})
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(userData)
+}
+
+func (handler *TokenHandler) Logout(w http.ResponseWriter, r *http.Request) {
+  http.SetCookie(w, &http.Cookie{
+    Name: "token",
+    Value: "",
+    HttpOnly: true,
+    Secure: true,
+    SameSite: http.SameSiteNoneMode, // TODO: change this
+    Path: "/",
+    Expires: time.Now().Add(time.Hour * -1),
+  })
+
+  w.WriteHeader(http.StatusOK)
 }

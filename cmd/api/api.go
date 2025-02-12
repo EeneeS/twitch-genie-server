@@ -51,6 +51,7 @@ func (app *application) mount() http.Handler {
 
 		r.Group(func(r chi.Router) {
 			r.Use(middlewares.AuthMiddleware(&app.auth))
+      r.Post("/logout", tokenHandler.Logout)
 			r.Get("/moderated-channels", channelHandler.GetModeratedChannels)
       r.Get("/ws", websocketHandler.Init)
 		})
@@ -61,7 +62,7 @@ func (app *application) mount() http.Handler {
 
 func (app *application) setupMiddleWare(r chi.Router) {
 	corsOptions := cors.Options{
-		AllowedOrigins:   []string{"http://localhost:6969"}, // Change to match your frontend
+		AllowedOrigins:   []string{"http://localhost:3000"}, // Change to match your frontend
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		ExposedHeaders:   []string{"Set-Cookie"},

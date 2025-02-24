@@ -9,5 +9,5 @@ import "net/http"
 // @ID health
 // @Router /health [get]
 func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+	w.Write([]byte("Health OK!"))
 }
